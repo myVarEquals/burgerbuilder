@@ -10,7 +10,7 @@ const burger = props => {
             return [...Array(props.ingredients[ingredientKey])].map((_, i) => { // make array with a length equal to amount of ingredient
                 return <BurgerIngredient key={ingredientKey + i} type={ingredientKey} />; // return a component for each element in the array with ingredient type
             })
-        }) // flatten
+        }) // flatten arrays
         .reduce((arr, el) => {
             return arr.concat(el);
         }, []);
