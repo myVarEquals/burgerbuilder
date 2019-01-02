@@ -83,6 +83,10 @@ class BurgerBuilder extends Component {
         this.setState({checkingOut: false});
     }
 
+    continueCheckOut = () => {
+        alert("Checking out...");
+    }
+
     render() {
 
         const disabledInfo = { // copy state
@@ -96,7 +100,11 @@ class BurgerBuilder extends Component {
         return (
             <Aux>
                 <Modal show={this.state.checkingOut} modalClosed={this.closeModalHandler}>
-                    <OrderSummary ingredients={this.state.ingredients} />
+                    <OrderSummary 
+                        ingredients={this.state.ingredients}
+                        price={this.state.totalPrice}
+                        checkOutCancel={this.closeModalHandler}
+                        checkOutCont={this.continueCheckOut} />
                 </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls 
