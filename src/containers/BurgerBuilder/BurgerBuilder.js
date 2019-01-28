@@ -19,16 +19,19 @@ const INGREDIENT_PRICES = {
 class BurgerBuilder extends Component {
     
     state = {
-        ingredients: { // item count
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0
-        },
+        ingredients: null,
         totalPrice: 4,
         purchasable: false,
         checkingOut: false,
         loading: false
+    }
+
+    componentDidMount() {
+        console.log('mounted...')
+        axiosInstance.get('https://react-burger-49425.firebaseio.com/ingredients.json')
+            .then(res => {
+                this.setState({ingredients: res.data})
+            });
     }
 
     updatePurchaseState (ingredients) {
@@ -126,11 +129,32 @@ class BurgerBuilder extends Component {
             disabledInfo[key] = disabledInfo[key] <= 0; // returns true or false
         }
 
-        let orderSummary = <OrderSummary 
+
+        let orderSummary = null;
+
+        let burger = <Spinner />
+
+        if (this.state.ingredients) {
+            burger = (
+                <>
+                <Burger ingredients={this.state.ingredients}/>
+                    <BuildControls 
+                        ingredientAdded={this.addIngredientHandler}
+                        ingredientRemoved={this.removeIngredientHandler}
+                        disabled={disabledInfo} // pass disabled obj in to disable buttons
+                        purchasable={this.state.purchasable}
+                        price={this.state.totalPrice}
+                        checkOut={this.checkingOutHandler}/>
+                </>
+            );
+            orderSummary = <OrderSummary 
                         ingredients={this.state.ingredients}
                         price={this.state.totalPrice}
                         checkOutCancel={this.closeModalHandler}
                         checkOutCont={this.continueCheckOut} />;
+        }
+        
+        
         if (this.state.loading) {
             orderSummary = <Spinner />
         }
@@ -140,14 +164,7 @@ class BurgerBuilder extends Component {
                 <Modal show={this.state.checkingOut} modalClosed={this.closeModalHandler}>
                     {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients}/>
-                <BuildControls 
-                    ingredientAdded={this.addIngredientHandler}
-                    ingredientRemoved={this.removeIngredientHandler}
-                    disabled={disabledInfo} // pass disabled obj in to disable buttons
-                    purchasable={this.state.purchasable}
-                    price={this.state.totalPrice}
-                    checkOut={this.checkingOutHandler}/>
+                {burger}
             </Aux>
         );
     }
